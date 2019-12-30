@@ -27,7 +27,7 @@ function translations(pageName, lang) {
   const params = `?lang=${lang}&page=${pageName}`
   const url = BASE_URL + suffix + params
 
-  console.log("api call:", url);
+  // console.log("api call:", url);
 
   return fetch(url).then(res => (res.json()));
 }

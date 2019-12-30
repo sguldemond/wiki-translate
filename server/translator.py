@@ -8,14 +8,15 @@ def api_url_base(lang_code):
 
 def search(input, lang_code):
     # https://www.mediawiki.org/wiki/API:Opensearch
-    # api_params = '&limit=15'
-    api_url = '{0}action=opensearch&format=json&namespace=0&search={1}'.format(api_url_base(lang_code), input)
+    api_params = '&format=json&namespace=0&limit=15'
+    api_url = '{0}action=opensearch{1}&search={2}'.format(api_url_base(lang_code), api_params, input)
 
+    # print(api_url)
     response = requests.get(api_url)
 
     if response.status_code == 200:
         data = json.loads(response.content.decode('utf-8'))
-        return data[1]
+        return [data[0], data[1], data[3]]
 
 
 def translate(page_name, source_lang_code, target_lang_code):
@@ -50,12 +51,18 @@ def get_langlinks(page_name, source_lang_code):
     api_url = '{0}action=query&format=json{1}&titles={2}'.format(api_url_base(source_lang_code), api_params, page_name)
 
     response = requests.get(api_url)
+    print(api_url)
 
     if response.status_code == 200:
         data = json.loads(response.content.decode('utf-8'))
+        print(data)
+
         page_id = list(data['query']['pages'])[0]
 
         lang_links = data['query']['pages'][page_id].get('langlinks')
+
+        if lang_links is None:
+            lang_links = []
 
     return lang_links
 

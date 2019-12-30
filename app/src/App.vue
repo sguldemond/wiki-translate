@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <h1>{{ title }}</h1>
+    <h2>{{ title }}</h2>
     <TranslationForm />
     <Footer />
-    <hr class="form-element">
-    <TabList />
+    <!-- <hr class="form-element"> -->
+    <!-- <TabList /> -->
   </div>
 </template>
 

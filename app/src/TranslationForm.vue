@@ -1,14 +1,17 @@
 <template>
   <div id="translation-form">
     <div id="search-form">
-      <b-form-select class="form-element" id="source-lang-select" v-model="sourceLang" :options="sourceLangs">
+      <b-form-select class="form-element" id="source-lang-select" v-model="sourceLang" :options="sourceLangs" v-on:change="onSourceLangChange()">
         <template v-slot:first>
           <option :value="null" disabled>{{ sourceLangTitle }}</option>
         </template>
       </b-form-select>
-      <b-form-input id="search-input" :disabled="sourceLang == null" class="form-element" list="search-result-list" v-model="searchValue" v-on:keyup="runSearch()" autocomplete="off"></b-form-input>
-      <b-form-datalist id="search-result-list" :options="searchResults"></b-form-datalist>
-      <b-button variant="primary" id="search-btn" class="form-element" v-on:click="findTranslations()" :disabled="searchValue == null">Find translations</b-button>
+      <div id="search-block" class="form-element">
+        <b-form-input id="search-input" :disabled="sourceLang == null" list="search-result-list" v-model="searchValue" v-on:keyup="runSearch()" autocomplete="off"></b-form-input>
+        <b-button :href="sourcePage.url" target="_blank" id="source-page-link" :disabled="sourcePage.url == null">Wiki</b-button>
+      </div>
+      <b-form-datalist id="search-result-list" :options="searchResults.titles"></b-form-datalist>
+      <b-button variant="primary" id="search-btn" class="form-element" v-on:click="findTranslations()" :disabled="sourcePage.title == null">Find translations</b-button>
       <br/>
       <b-form-select id="lang-form" class="form-element" v-model="selectedTranslation" :options="translationOptions">
         <template v-slot:first>
@@ -19,7 +22,6 @@
     <div id="result-box" class="form-element">
         <a id="result-link" v-if="selectedTranslation" v-bind:href="selectedTranslation['url']" target="blank">
           <h2>{{ selectedTranslation['*'] }}</h2>
-          <!-- <h2>{{ debug.result }}</h2> -->
         </a>
     </div>
   </div>
@@ -36,21 +38,23 @@
         sourceLangTitle: "Select source language",
         sourceLangs: [],
         searchValue: null,
-        searchResults: [],
+        searchResults: {},
+        sourcePage: {},
         translationOptions: [],
         selectedTranslation: null,
         sourceLang: null,
         targetLang: "en",
         debug: {
-          result: "Samenstelling Tweede Kamer 2017-heden"
+          sourcePage: "Samenstelling Tweede Kamer 2017-heden", // long translation in English
+          sourcePage: "List of members of the American Legislative Exchange Council" // no translations
         }
       }
     },
     methods: {
       setSourceLangs() {
+        console.log("==> Getting source languages...")
         wikipedia.translations('Wikipedia', 'en')
           .then(res => {
-            // console.log(res)
             var langs = res.map(function(opt) {
               return { text: opt.langname, value: opt.lang} 
             })
@@ -62,20 +66,26 @@
           })
       },
       runSearch() {
-        // console.log("Searching...")
-        // console.log(this.searchValue)
+        this.selectedTranslation = null
+        // console.log("==> Searching wikipedia articles...")
         wikipedia.search(this.searchValue, this.sourceLang)
           .then(res => {
-            console.log(res)
-            this.searchResults =  res
+            this.searchResults = {
+              titles: res[1],
+              urls: res[2]
+            }
+
+            if (this.searchResults.titles.length > 0) {
+              this.sourcePage.title = this.searchResults.titles[0]
+              this.sourcePage.url = this.searchResults.urls[0]
+              console.log("==> Source page set: " + this.sourcePage.title)
+            }
           });
       },
       findTranslations() {
-        console.log("Click!")
-
-        wikipedia.translations(this.searchValue, this.sourceLang)
+        console.log("==> Looking for translations...")
+        wikipedia.translations(this.sourcePage.title, this.sourceLang)
           .then(res => {
-            console.log(res)
             var langs = res.map(function(opt) {
               return { text: opt.langname, value: opt}
             })
@@ -90,9 +100,19 @@
         } else {
           return "No translations found"
         }
+      },
+      onSourceLangChange() {
+        console.log("==> Source lang code changed to: " + this.sourceLang)
+
+        localStorage.sourceLang = this.sourceLang
       }
     },
     mounted() {
+      if (localStorage.sourceLang) {
+        console.log("==> Setting source lang from local storage: " + localStorage.sourceLang)
+        this.sourceLang = localStorage.sourceLang
+      }
+
       this.setSourceLangs()
     }
   }
@@ -101,6 +121,14 @@
 <style>
 #translation-form {
   padding-top: 20px;
+}
+
+#search-block {
+  display: flex;
+}
+
+#source-page-link {
+  margin-left: 10px;
 }
 
 #search-btn {

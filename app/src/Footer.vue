@@ -1,12 +1,17 @@
 <template>
   <div id="footer">
-    <p>By <b>Stan Guldemond</b> // code on <a id="link" href="#">GitHub</a></p>
+    <p>By <b>Stan Guldemond</b> // code on <a id="link" :href="githubURL" target="_blank">GitHub</a></p>
   </div>
 </template>
 
 <script>
   export default {
-    name: 'footer'
+    name: 'footer',
+    data() {
+      return {
+        githubURL: "https://github.com/sguldemond/wiki-translate"
+      }
+    }
   }
 </script>
 
