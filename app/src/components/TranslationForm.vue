@@ -28,7 +28,7 @@
 </template>
 
 <script>
-  import { wikipedia } from "./ServerApi";
+  import { wikipedia } from "../api";
 
   export default {
     name: 'translationForm',
@@ -46,7 +46,7 @@
         targetLang: "en",
         debug: {
           sourcePage: "Samenstelling Tweede Kamer 2017-heden", // long translation in English
-          sourcePage: "List of members of the American Legislative Exchange Council" // no translations
+          // sourcePage: "List of members of the American Legislative Exchange Council" // no translations
         }
       }
     },
@@ -59,10 +59,10 @@
               return { text: opt.langname, value: opt.lang} 
             })
             langs.push( { text: 'English', value: 'en'})
-
             langs.sort((a, b) => (a.text > b.text) ? 1 : -1)
 
             this.sourceLangs = langs
+            console.log("==> Source languages set")
           })
       },
       runSearch() {
@@ -92,6 +92,7 @@
             langs.sort((a, b) => (a.text > b.text) ? 1 : -1)
 
             this.translationOptions = langs
+            console.log("==> Translations found: " + langs.length)
           })
       },
       translationBoxText() {

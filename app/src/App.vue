@@ -3,22 +3,22 @@
     <h2>{{ title }}</h2>
     <TranslationForm />
     <Footer />
-    <!-- <hr class="form-element"> -->
-    <!-- <TabList /> -->
+    <hr class="form-element">
+    <Helper />
   </div>
 </template>
 
 <script>
-  import TranslationForm from "./TranslationForm";
-  import Footer from "./Footer";
-  import TabList from "./TabList";
+  import TranslationForm from "./components/TranslationForm";
+  import Footer from "./components/Footer";
+  import Helper from "./components/Helper";
 
   export default {
     name: 'app',
     components: {
       TranslationForm,
       Footer,
-      TabList
+      Helper
     },
     data () {
       return {

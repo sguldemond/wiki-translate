@@ -1,5 +1,5 @@
 <template>
-  <div id="footer">
+  <div id="foot">
     <p>By <b>Stan Guldemond</b> // code on <a id="link" :href="githubURL" target="_blank">GitHub</a></p>
   </div>
 </template>
@@ -16,7 +16,7 @@
 </script>
 
 <style>
-#footer {
+#foot {
   position: fixed;
   bottom: 0;
   left: 0;

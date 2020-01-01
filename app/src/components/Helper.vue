@@ -30,7 +30,7 @@
 
 <script>
 export default {
-  name: "tabList",
+  name: "helper",
   data() {
     return {
       cards: {
